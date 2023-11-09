@@ -1,0 +1,70 @@
+import React, { useEffect } from 'react'
+import { Table } from 'antd'
+import { useDispatch, useSelector } from 'react-redux';
+import { getOrderById } from "../features/auth/authSlice";
+import { Link, useLocation } from 'react-router-dom';
+import { BiEdit } from 'react-icons/bi';
+import { AiFillDelete } from 'react-icons/ai';
+const columns = [
+    {
+        title: "SNo",
+        dataIndex: "key",
+    },
+    {
+        title: "Product Name",
+        dataIndex: "name",
+    },
+    {
+        title: "Brand",
+        dataIndex: "brand",
+    },
+    {
+        title: "Quantity",
+        dataIndex: "quantity",
+    },
+    {
+        title: "Color",
+        dataIndex: "color",
+    },
+    {
+        title: "Amount",
+        dataIndex: "amount",
+    },
+    {
+        title: "Date",
+        dataIndex: "date",
+    },
+];
+
+const ViewOrders = () => {
+    const location = useLocation();
+    const orderId = location.pathname.split("/")[3];
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(getOrderById(orderId))
+    }, []);
+    const orderState = useSelector((state) => state.auth?.singleOrder?.orders);
+    console.log(orderState)
+    const data1 = [];
+    for (let i = 0; i < orderState?.orderItems?.length; i++) {
+        data1.push({
+            key: i + 1,
+            name: orderState?.orderItems[0]?.product?.title,
+            brand: orderState?.orderItems[0]?.product?.brand,
+            quantity: orderState?.orderItems[0]?.quantity,
+            amount: orderState?.orderItems[0]?.price,
+            color: orderState?.orderItems[0]?.color?.title,
+            date: new Date(orderState?.createdAt).toLocaleString(),
+        });
+    }
+    return (
+        <div>
+            <h3 className="mb-4 title">View Orders</h3>
+            <div>
+                <Table columns={columns} dataSource={data1} />
+            </div>
+        </div>
+    )
+}
+
+export default ViewOrders
